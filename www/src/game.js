@@ -26,11 +26,19 @@ var SnakePart = cc.Sprite.extend({
 var SnakeLayer = cc.Layer.extend({
     snakeHead: null,
     ctor: function () {
+         /* Размер окна */
+        var winSize = cc.view.getDesignResolutionSize();
+        
          /* Вызов конструктора суперкласса */
         this._super();
         
         /* Создание головы змеи */
         this.snakeHead = new SnakePart(asset.SnakeHead_png);
+        
+        /* Координаты для головы змеи */
+        this.snakeHead.x = winSize.width / 2;
+        this.snakeHead.y = winSize.height / 2;
+        
         /* Добавление головы в качестве объекта-потомка слоя */
         this.addChild(this.snakeHead);
         

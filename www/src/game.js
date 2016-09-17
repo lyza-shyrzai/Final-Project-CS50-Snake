@@ -42,6 +42,8 @@ var SnakeLayer = cc.Layer.extend({
         /* Добавление головы в качестве объекта-потомка слоя */
         this.addChild(this.snakeHead);
         
+        /* Запланируем обновления */
+        this.scheduleUpdate();
     },
     
     moveSnake: function(dir) {
@@ -63,5 +65,11 @@ var SnakeLayer = cc.Layer.extend({
         if (dirMap[dir] !== undefined) {
             dirMap[dir] ();
         }
+    },
+    
+    update: function() {
+        /* Число, соответствующее направлению */
+        var up = 1;
+        this.moveSnake(up);
     },
 });

@@ -12,11 +12,16 @@ var GameScene  = cc.Scene.extend({
 
 //описания одного сегмента змейки
 var SnakePart = cc.Sprite.extend({
+    prevX: this.x,
+    prevY: this.y,
     ctor: function(sprite) {
         /* Вызов конструктора суперкласса с передачей ему спрайта, представляющего фрагмент тела змеи */
         this._super(sprite);
     },
     move: function(posX, posY) {
+        /* Установим предыдущее расположение */
+        this.prevX = this.x;
+        this.prevY = this.y;
         /* Обновляем текущую позицию */
         this.x = posX;
         this.y = posY;
@@ -24,7 +29,7 @@ var SnakePart = cc.Sprite.extend({
 });
 
 var SnakeLayer = cc.Layer.extend({
-    snakeHead: null,
+    snakeParts: null,
     interval: 0.25, //секунды
     counter: this.interval,
     ctor: function () {
@@ -34,18 +39,27 @@ var SnakeLayer = cc.Layer.extend({
          /* Вызов конструктора суперкласса */
         this._super();
         
+        /* Инициализируем массив snakeParts */
+        this.snakeParts = [];   
+        
         /* Создание головы змеи */
-        this.snakeHead = new SnakePart(asset.SnakeHead_png);
+        var snakeHead = new SnakePart(asset.SnakeHead_png);
         
         /* Координаты для головы змеи */
-        this.snakeHead.x = winSize.width / 2;
-        this.snakeHead.y = winSize.height / 2;
+        snakeHead.x = winSize.width / 2;
+        snakeHead.y = winSize.height / 2;
         
         /* Добавление головы в качестве объекта-потомка слоя */
-        this.addChild(this.snakeHead);
+        this.addChild(snakeHead);
+        this.snakeParts.push(snakeHead);
         
         /* Запланируем обновления */
         this.scheduleUpdate();
+        
+        for (var parts = 0; parts < 10; parts++) 
+            {
+                this.addPart();
+            }
     },
     
     moveSnake: function(dir) {
@@ -54,7 +68,7 @@ var SnakeLayer = cc.Layer.extend({
         var up = 1, down = -1, left = -2, right = 2, step = 20;
         
         /* Перенесём переменную snakeHead в локальную область видимости */ 
-        var snakeHead = this.snakeHead;
+        var snakeHead = this.snakeParts[0];
         
         /* Сопоставление направлений и реализующего перемещения кода */
         var dirMap = {};
@@ -67,6 +81,21 @@ var SnakeLayer = cc.Layer.extend({
         if (dirMap[dir] !== undefined) {
             dirMap[dir] ();
         }
+        
+        /* Сохраняем текущую позицию головы для следующего фрагмента змеи */
+        var prevX = snakeHead.prevX;
+        var prevY = snakeHead.prevY;
+        
+        /* Перемещаем остальные части змеи */
+        for (var part = 1; part < this.snakeParts.length; part++)
+            {
+                var curPart = this.snakeParts[part];
+                /* Перемещаем текущую часть, сохраняем её предыдущую позицию для следующей итерации */
+                curPart.move(prevX,prevY);
+                prevX = curPart.prevX;
+                prevY = curPart.prevY;
+            }
+        
     },
     
     update: function(dt) {
@@ -80,4 +109,18 @@ var SnakeLayer = cc.Layer.extend({
             this.moveSnake(up);
         }
     },
+    
+    addPart: function() {
+        var newPart = new SnakePart(asset.SnakeBody_png),
+            size = this.snakeParts.length,
+            tail = this.snakeParts[size - 1];
+        
+        /* Изначально новая часть расположена в хвосте */
+        newPart.x = tail.x;
+        newPart.y = tail.y;
+        
+        /* Добавляем объект в качестве потомка слоя */
+        this.addChild(newPart);
+        this.snakeParts.push(newPart);
+    }
 });

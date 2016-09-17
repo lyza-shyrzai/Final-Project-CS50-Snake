@@ -43,4 +43,25 @@ var SnakeLayer = cc.Layer.extend({
         this.addChild(this.snakeHead);
         
     },
+    
+    moveSnake: function(dir) {
+        
+        /* Набор значений, задающих направление перемещения */
+        var up = 1, down = -1, left = -2, right = 2, step = 20;
+        
+        /* Перенесём переменную snakeHead в локальную область видимости */ 
+        var snakeHead = this.snakeHead;
+        
+        /* Сопоставление направлений и реализующего перемещения кода */
+        var dirMap = {};
+        dirMap[up] = function() {snakeHead.move(snakeHead.x, snakeHead.y + step);};
+        dirMap[down] = function() {snakeHead.move(snakeHead.x, snakeHead.y - step);};
+        dirMap[left] = function() {snakeHead.move(snakeHead.x - step, snakeHead.y);};
+        dirMap[right] = function() {snakeHead.move(snakeHead.x + step, snakeHead.y);};
+        
+        /* Перемещаем голову в заданном направлении */
+        if (dirMap[dir] !== undefined) {
+            dirMap[dir] ();
+        }
+    },
 });

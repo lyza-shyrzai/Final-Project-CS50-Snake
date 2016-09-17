@@ -25,6 +25,8 @@ var SnakePart = cc.Sprite.extend({
 
 var SnakeLayer = cc.Layer.extend({
     snakeHead: null,
+    interval: 0.25, //секунды
+    counter: this.interval,
     ctor: function () {
          /* Размер окна */
         var winSize = cc.view.getDesignResolutionSize();
@@ -67,9 +69,15 @@ var SnakeLayer = cc.Layer.extend({
         }
     },
     
-    update: function() {
+    update: function(dt) {
         /* Число, соответствующее направлению */
         var up = 1;
-        this.moveSnake(up);
+         /* Перемещаем объект только если истёк заданный срок */
+        if (this.counter < this.interval) {
+            this.counter += dt;
+        } else {
+            this.counter = 0;
+            this.moveSnake(up);
+        }
     },
 });

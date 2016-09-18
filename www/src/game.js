@@ -80,6 +80,40 @@ var SnakeLayer = cc.Layer.extend({
             }
         }, this);
         
+        /* Прослушиватель для организации сенсорного управления */
+        cc.eventManager.addListener({
+            event: cc.EventListener.TOUCH_ONE_BY_ONE,
+            onTouchBegan: function() {
+                
+                /* Позволяет задействовать onTouchMoved, если возвращено true */
+                return true;
+            },
+            
+            onTouchMoved: function(touch, event) {
+                var targ = event.getCurrentTarget();
+                var up = 1, down = -1, left = -2, right = 2;
+                
+                /* Получаем расстояние перемещения */
+                var delta = touch.getDelta();
+                
+                /* Если было касание с протягиванием */
+                if (delta.x !== 0 && delta.y !== 0)
+                    {
+                        if (Math.abs(delta.x) > Math.abs(delta.y))
+                            {
+                                /* Определяем направление, получая знак */
+                                targ.curDir = Math.sign(delta.x) * right;
+                            }
+                        else if (Math.abs(delta.x) < Math.abs(delta.y))
+                            {
+                                /* Определяем направление, получая знак */
+                                targ.curDir = Math.sign(delta.y) * up;
+                            }
+                    }
+                /* Если было простое касание, без протягивания, не делаем ничего */
+            }
+        }, this);
+        
         for (var parts = 0; parts < 10; parts++) 
             {
                 this.addPart();

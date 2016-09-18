@@ -30,6 +30,7 @@ var SnakePart = cc.Sprite.extend({
 
 var SnakeLayer = cc.Layer.extend({
     snakeParts: null,
+    curDir: 0, /* направление перемещения, соответствующее заданным ранее переменным */
     interval: 0.25, //секунды
     counter: this.interval,
     ctor: function () {
@@ -55,6 +56,29 @@ var SnakeLayer = cc.Layer.extend({
         
         /* Запланируем обновления */
         this.scheduleUpdate();
+        
+        cc.eventManager.addListener({
+            event: cc.EventListener.KEYBOARD,
+            onKeyPressed: function(keyCode, event) {
+                var targ = event.getCurrentTarget();
+                
+                /* Набор значений, задающих направление перемещения */
+                var up = 1, down = -1, left = -2, right = 2;
+                
+                 /* Объект, в котором клавишам поставлены в соответствие направления */
+                var keyMap = {};
+                keyMap[87] = up; // w
+                keyMap[83] = down; // s
+                keyMap[65] = left; // a
+                keyMap[68] = right; // d
+                
+                /* Обработка нажатий на клавиши */
+                if (keyMap[keyCode] !== undefined)
+                    {
+                        targ.curDir = keyMap[keyCode];
+                    }
+            }
+        }, this);
         
         for (var parts = 0; parts < 10; parts++) 
             {
@@ -106,7 +130,7 @@ var SnakeLayer = cc.Layer.extend({
             this.counter += dt;
         } else {
             this.counter = 0;
-            this.moveSnake(up);
+            this.moveSnake(this.curDir);
         }
     },
     

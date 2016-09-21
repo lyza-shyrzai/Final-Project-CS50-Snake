@@ -31,7 +31,8 @@ var SnakePart = cc.Sprite.extend({
 var SnakeLayer = cc.Layer.extend({
     snakeParts: null,
     biscuit: null, // ссылка на печенье
-    curDir: 0, /* направление перемещения, соответствующее заданным ранее переменным */
+    curDir: 0,/* направление перемещения, соответствующее заданным ранее переменным */
+    nextDir: 0,
     interval: 0.25, //секунды
     counter: this.interval,
     ctor: function () {
@@ -79,7 +80,8 @@ var SnakeLayer = cc.Layer.extend({
                 /* Обработка нажатий на клавиши */
                 if (keyMap[keyCode] !== undefined)
                     {
-                        targ.curDir = keyMap[keyCode];
+                        //targ.curDir = keyMap[keyCode];
+                        targ.nextDir = keyMap[keyCode];
                     }
             }
         }, this);
@@ -106,12 +108,14 @@ var SnakeLayer = cc.Layer.extend({
                         if (Math.abs(delta.x) > Math.abs(delta.y))
                             {
                                 /* Определяем направление, получая знак */
-                                targ.curDir = Math.sign(delta.x) * right;
+                                //targ.curDir = Math.sign(delta.x) * right;
+                                targ.nextDir = Math.sign(delta.x) * right;
                             }
                         else if (Math.abs(delta.x) < Math.abs(delta.y))
                             {
                                 /* Определяем направление, получая знак */
-                                targ.curDir = Math.sign(delta.y) * up;
+                                //targ.curDir = Math.sign(delta.y) * up;
+                                targ.nextDir = Math.sign(delta.y) * up;
                             }
                     }
                 /* Если было простое касание, без протягивания, не делаем ничего */
@@ -120,7 +124,7 @@ var SnakeLayer = cc.Layer.extend({
         
     },
     
-    moveSnake: function(dir) {
+    moveSnake: function() {
         
         /* Набор значений, задающих направление перемещения */
         var up = 1, down = -1, left = -2, right = 2, step = 20;
@@ -135,9 +139,15 @@ var SnakeLayer = cc.Layer.extend({
         dirMap[left] = function() {snakeHead.move(snakeHead.x - step, snakeHead.y);};
         dirMap[right] = function() {snakeHead.move(snakeHead.x + step, snakeHead.y);};
         
+        /* Меняем направление движения, если оно не является противоположным текущему или если змея состоит лишь из головы */
+        if ((this.nextDir * -1) != this.curDir || this.snakeParts.length == 1)
+            {
+                this.curDir = this.nextDir;
+            }
+        
         /* Перемещаем голову в заданном направлении */
-        if (dirMap[dir] !== undefined) {
-            dirMap[dir] ();
+        if (dirMap[this.curDir] !== undefined) {
+            dirMap[this.curDir] ();
         }
         
         /* Сохраняем текущую позицию головы для следующего фрагмента змеи */
@@ -164,7 +174,8 @@ var SnakeLayer = cc.Layer.extend({
             this.counter += dt;
         } else {
             this.counter = 0;
-            this.moveSnake(this.curDir);
+            this.moveSnake(this.nextDir);
+            this.moveSnake();
             
             /* Проверяем, столкнулась ли голова змеи с границей экрана, её телом или с печеньем */
             this.checkCollision();

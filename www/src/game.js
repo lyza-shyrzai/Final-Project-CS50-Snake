@@ -30,6 +30,7 @@ var SnakePart = cc.Sprite.extend({
 
 var SnakeLayer = cc.Layer.extend({
     snakeParts: null,
+    biscuit: null, // ссылка на печенье
     curDir: 0, /* направление перемещения, соответствующее заданным ранее переменным */
     interval: 0.25, //секунды
     counter: this.interval,
@@ -49,6 +50,9 @@ var SnakeLayer = cc.Layer.extend({
         /* Координаты для головы змеи */
         snakeHead.x = winSize.width / 2;
         snakeHead.y = winSize.height / 2;
+        
+        /* Дополнение для работы с печеньем */
+        this.updateBiscuit();
         
         /* Добавление головы в качестве объекта-потомка слоя */
         this.addChild(snakeHead);
@@ -180,5 +184,79 @@ var SnakeLayer = cc.Layer.extend({
         /* Добавляем объект в качестве потомка слоя */
         this.addChild(newPart);
         this.snakeParts.push(newPart);
-    }
+    },
+    
+    updateBiscuit: function() {
+        /* Если печенье уже есть на игровом экране */
+        if (this.biscuit) {
+            /* Переместить его */
+            this.biscuit.randPosition(this.snakeParts);        
+        /* Если нет */
+        } else {
+            /* Создать новый спрайт */
+            this.biscuit = new Biscuit(this.snakeParts);
+            /* и добавить к сцене в качестве объекта-потомка */
+            this.addChild(this.biscuit);
+        }
+    },
+});
+
+var Biscuit = cc.Sprite.extend({
+    winSize: 0,
+    ctor: function(snakeParts) {
+        /* Вызов метода суперкласса */        
+        this._super(asset.SnakeBiscuit_png);          
+        /* Настройка winSize */
+        this.winSize = cc.view.getDesignResolutionSize();
+        /* Установка позиции спрайта */
+        this.randPosition(snakeParts);
+        
+        
+    },
+    
+    randPosition: function(snakeParts) {            
+        var step = 20;
+        var randNum = function(range) {
+            /* Возвратим случайную позицию в пределах диапазона range */
+            return Math.floor(Math.random() * range);        
+        };
+        /* Диапазон возможных координат, где может располагаться печенье */
+        var range = {
+            x: (this.winSize.width / step) - 1,
+            y: (this.winSize.height / step) - 1             
+        }                          
+        /* Возможная позиция */
+        var possible = {
+             x: randNum(range.x) * step,
+             y: randNum(range.y) * step
+        }                        
+        var flag = true;
+        var hit = false;
+        
+        /* Если нужна дополнительная попытка */
+        while (flag) {            
+            /* Для каждого фрагмента змеи */
+            for (var part = 0; part < snakeParts.length; part++) {
+     /* Проверяем сгенерированные координаты на столкновение с любым фрагментом змеи */
+if (snakeParts[part].x == possible.x && 
+    snakeParts[part].y == possible.y) 
+    {
+                    /* Если столкновение произошло, установим переменную hit */
+                    hit = true;
+                }
+            }
+            /* Если было обнаружено столкновение */
+            if (hit == true) {                
+                /* Попытаемся снова */
+                possible.x = randNum(range.x) * step;
+                possible.y = randNum(range.y) * step;                
+                hit = false;
+            } else { /* В противном случае */
+                /* Новая позиция найдена */
+                flag = false;
+                this.x = possible.x;
+                this.y = possible.y;
+            }            
+        }        
+    },    
 });

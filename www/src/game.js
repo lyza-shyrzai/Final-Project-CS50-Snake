@@ -118,10 +118,6 @@ var SnakeLayer = cc.Layer.extend({
             }
         }, this);
         
-        for (var parts = 0; parts < 10; parts++) 
-            {
-                this.addPart();
-            }
     },
     
     moveSnake: function(dir) {
@@ -169,6 +165,9 @@ var SnakeLayer = cc.Layer.extend({
         } else {
             this.counter = 0;
             this.moveSnake(this.curDir);
+            
+            /* Проверяем, столкнулась ли голова змеи с границей экрана, её телом или с печеньем */
+            this.checkCollision();
         }
     },
     
@@ -198,6 +197,51 @@ var SnakeLayer = cc.Layer.extend({
             /* и добавить к сцене в качестве объекта-потомка */
             this.addChild(this.biscuit);
         }
+    },
+    
+    checkCollision: function()
+    {
+        var winSize = cc.view.getDesignResolutionSize();
+        var head = this.snakeParts[0];
+        var body = this.snakeParts;
+        
+        /* Проверка столкновения с границей экрана */
+        if (head.x < 0)
+            {
+                head.x = winSize.width;
+            }
+        else if (head.x > winSize.width)
+            {
+                head.x = 0;
+            }
+        if (head.y < 0)
+            {
+                head.y = winSize.height;
+            }
+        else if (head.y > winSize.height)
+            {
+                head.y = 0;
+            }
+        
+        /* Проверка столкновения с собой */
+        for (var part = 1; part < body.length; part++)
+            {
+                if (head.x == body[part].x && head.y == body[part].y)
+                    {
+                        /* Запуск сцены GameOver */
+                        
+                        
+                    }
+            }
+        
+        /* Проверка столкновения с печеньем */
+        if (head.x == this.biscuit.x && head.y == this.biscuit.y)
+            {
+                /* Обновление позиции печенья */
+                this.updateBiscuit();
+                /* Увеличение длины змеи */
+                this.addPart();
+            }
     },
 });
 

@@ -129,7 +129,7 @@ var SnakeLayer = cc.Layer.extend({
     moveSnake: function() {
         
         /* Набор значений, задающих направление перемещения */
-        var up = 1, down = -1, left = -2, right = 2, step = 20;
+        var up = 1, down = -1, left = -2, right = 2, step = 10;
         
         /* Перенесём переменную snakeHead в локальную область видимости */ 
         var snakeHead = this.snakeParts[0];
@@ -242,8 +242,11 @@ var SnakeLayer = cc.Layer.extend({
                 if (head.x == body[part].x && head.y == body[part].y)
                     {
                         /* Запуск сцены GameOver */
-                        
-                        
+                        //this.snakeParts = null;
+                        cc.director.runScene(
+                        new GameOverScene 
+                            (this.parent.score_layer.score)
+                        );
                     }
             }
         
@@ -373,5 +376,47 @@ var MenuScene = cc.Scene.extend({
                 cc.director.runScene(new GameScene());
             },
         }, this);
+    },
+});
+
+var GameOverScene = cc.Scene.extend({
+    finalScore: 0,
+    labelGameOver: {},
+    labelScore: {},
+    labelPrompt: {},
+    ctor: function(score) {
+        this._super();
+        this.finalScore = score;
+        
+        /* Прослушиватель события касания, запускает экран меню */
+        cc.eventManager.addListener({
+            event: cc.EventListener.TOUCH_ONE_BY_ONE,
+            onTouchBegan: function(touch, event) {
+                cc.director.runScene(new MenuScene());
+            }
+        }, this);
+    },
+    
+    onEnter: function() {
+        this._super();
+        /* размер окна */
+        var winSize = cc.view.getDesignResolutionSize();
+        /* Надписи для сцены GameOver */
+        this.labelGameOver = new cc.LabelTTF("Game Over :(", "Arial", 60);
+        this.labelGameOver.x = winSize.width * 0.50;
+        this.labelGameOver.y = winSize.height * 0.50;
+        this.addChild(this.labelGameOver);
+        
+        /* Надпись, содержащая сведения о набранных очках */
+        this.labelScore = new cc.LabelTTF("Score: " + this.finalScore, "Arial", 30);
+        this.labelScore.x = winSize.width * 0.50;
+        this.labelScore.y = winSize.height * 0.43;
+        this.addChild(this.labelScore);
+        
+        /* Предложение сыграть снова */
+        this.labelPrompt = new cc.LabelTTF("Click or Tap To Try Again");
+        this.labelPrompt.x = winSize.width * 0.50;
+        this.labelPrompt.y = winSize.height * 0.39;
+        this.addChild(this.labelPrompt);
     },
 });

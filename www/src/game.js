@@ -345,3 +345,33 @@ var ScoreLayer = cc.Layer.extend({
         this.labelScore.setString("Score: " + this.score);
     },
 });
+
+var MenuScene = cc.Scene.extend({
+    titleSprite: {},
+    subTitleSprite: {},
+    onEnter: function() {
+        this._super();
+        /* Получим размер окна */
+        var winSize = cc.view.getDesignResolutionSize();
+        
+        /* Создадим заголовок */
+        this.titleSprite = cc.LabelTTF.create("Snake50", "Arial", 50);
+        this.titleSprite.x = winSize.width / 2;
+        this.titleSprite.y = winSize.height / 2;
+        this.addChild(this.titleSprite);
+        
+        /* Создаём подзаголовок */
+        this.subTitleSprite = cc.LabelTTF.create("Click anywhere to play", "Arial", 20);
+        this.subTitleSprite.x = winSize.width / 2;
+        this.subTitleSprite.y = winSize.height / 2 - 80;
+        this.addChild(this.subTitleSprite);
+        
+        /* Добавляем прослушиватель события касания для запуска игры */
+        cc.eventManager.addListener({
+            event: cc.EventListener.TOUCH_ONE_BY_ONE,
+            onTouchBegan: function(touches, event) {
+                cc.director.runScene(new GameScene());
+            },
+        }, this);
+    },
+});

@@ -75,7 +75,7 @@ cc.game.onStart = function(){
     cc.LoaderScene.preload(g_resources, function () {
         // load and run the HelloWorldScene
         // see www/src/app.js for definition
-        cc.director.runScene(new GameScene());
+        cc.director.runScene(new MenuScene());
     }, this);
 };
 cc.game.run();

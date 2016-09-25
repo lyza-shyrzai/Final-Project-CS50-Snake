@@ -4,8 +4,10 @@ var GameScene  = cc.Scene.extend({
     onEnter:function () {
         this._super();
     
+    this.score_layer = new ScoreLayer ();    
     this.snake_layer = new SnakeLayer ();
     
+    this.addChild(this.score_layer, 1);    
     this.addChild(this.snake_layer, 0);
     }
 });
@@ -248,8 +250,12 @@ var SnakeLayer = cc.Layer.extend({
         /* Проверка столкновения с печеньем */
         if (head.x == this.biscuit.x && head.y == this.biscuit.y)
             {
+                /* Увеличиваем число набранных очков */
+                this.parent.score_layer.scoreIncrease();
+                
                 /* Обновление позиции печенья */
                 this.updateBiscuit();
+                
                 /* Увеличение длины змеи */
                 this.addPart();
             }
@@ -314,4 +320,28 @@ if (snakeParts[part].x == possible.x &&
             }            
         }        
     },    
+});
+
+var ScoreLayer = cc.Layer.extend({
+    score: 0,
+    labelScore: null,
+    ctor: function() {
+        /* Вызываем конструктор суперкласса */
+        this._super();
+        /* Инициализация */
+        this.init();
+    },
+    init: function() {
+        /* Создаём текст для вывода сведений об очках */
+        this.labelScore = cc.LabelTTF.create("Score: 0");
+        this.labelScore.setColor(cc.color(255, 255, 255, 255));
+        this.labelScore.setPosition(cc.p(240, 700));
+        this.addChild(this.labelScore);
+    },
+    
+    scoreIncrease: function() {
+        /* Увеличиваем набранные очки и обновляем текст */
+        this.score += 1;
+        this.labelScore.setString("Score: " + this.score);
+    },
 });

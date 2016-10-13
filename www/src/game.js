@@ -278,6 +278,9 @@ var SnakeLayer = cc.Layer.extend({
                 /* Обновление позиции печенья */
                 this.updateBiscuit();
                 
+                /* Обновление позиции камня */
+                this.updateStone();
+                
                 /* Увеличение длины змеи */
                 this.addPart();
             }

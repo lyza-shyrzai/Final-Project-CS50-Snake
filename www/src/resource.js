@@ -1,7 +1,8 @@
 var asset = {
     SnakeHead_png : "asset/snake_head.png",
     SnakeBody_png : "asset/snake_body.png",
-    SnakeBiscuit_png : "asset/snake_biscuit.png"
+    SnakeBiscuit_png : "asset/snake_biscuit.png",
+    SnakeStone_png : "asset/snake_stone.png"
 };
 
 var g_resources = [];

@@ -218,7 +218,7 @@ var SnakeLayer = cc.Layer.extend({
     },
     
     updateStone: function() {
-        /* Если печенье уже есть на игровом экране */
+        /* Если камень уже есть на игровом экране */
         if (this.stone) {
             /* Переместить его */
             this.stone.randPosition(this.snakeParts);        
@@ -363,7 +363,7 @@ var Stone = cc.Sprite.extend({
             /* Возвратим случайную позицию в пределах диапазона range */
             return Math.floor(Math.random() * range);        
         };
-        /* Диапазон возможных координат, где может располагаться печенье */
+        /* Диапазон возможных координат, где может располагаться камень */
         var range = {
             x: (this.winSize.width / step) - 1,
             y: (this.winSize.height / step) - 1             

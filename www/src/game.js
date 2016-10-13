@@ -281,6 +281,16 @@ var SnakeLayer = cc.Layer.extend({
                 /* Увеличение длины змеи */
                 this.addPart();
             }
+        
+        /* Проверка столкновения с камнем */
+        if (head.x == this.stone.x && head.y == this.stone.y)
+            {
+                /* Запуск сцены GameOver */
+                cc.director.runScene(
+                new GameOverScene 
+                (this.parent.score_layer.score)
+                );
+            }
     },
 });
 
